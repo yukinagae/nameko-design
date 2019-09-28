@@ -1,4 +1,4 @@
-# nameko-desin
+# nameko-design
 
 WIP: Generate [Nameko](https://www.nameko.io/) http files from design schema inspired by [goa](https://goa.design/)
 
