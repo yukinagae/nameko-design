@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "nameko-design"
+version = "0.1.0"
+description = "Generate http files from design schema inspired by goa"
+authors = ["yukinagae <yuki-nagae@m3.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+Jinja2 = "^2.10"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.7"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
