@@ -59,3 +59,36 @@ class HttpService:
     def readiness(self, request) -> str:
         pass
 ```
+
+## TODO
+
+- [ ] Configure http url and port
+- [ ] Add URL parameter and type
+- [ ] Add payload (name, type, description, position etc)
+- [ ] Add validation
+- [ ] Add gRPC server
+- [ ] Generate proto files
+- [ ] Generate swagger json
+
+What I want:
+
+```python
+with Service('http_service'):
+    Title('This is a http service')
+
+    with Method('liveness'):
+        Description('liveness probe')
+        Result(str)
+        HTTP(GET, '/liveness')
+        GRPC() # Not yet imnplemented
+
+    with Method('add'):
+        Description('a + b')
+        with Payload(): # Not yet implemented
+            Field(1, "a", int, "left operand")
+            Field(2, "b", int, "right operand")
+            Required("a", "b")
+        Result(Int)
+        HTTP(GET, '/add/{a}/{b}') # Not yet implemented
+        GRPC() # Not yet imnplemented
+```
