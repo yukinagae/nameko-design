@@ -32,12 +32,12 @@ with Service("http_service"):
     with Method("liveness"):
         Description("liveness probe")
         Result(str)
-        HTTP('GET', '/liveness')
+        HTTP(GET, '/liveness')
 
     with Method("readiness"):
         Description("readiness probe")
         Result(str)
-        HTTP('GET', '/readiness')
+        HTTP(GET, '/readiness')
 ```
 
 will generate the below nameko file

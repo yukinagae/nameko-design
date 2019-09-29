@@ -1,4 +1,5 @@
 import threading
+from enum import Enum
 from jinja2 import Template
 
 
@@ -108,7 +109,7 @@ class Method(Context):
         """)
         return template.render(
             name=self.name,
-            http_method=self.http.http_method,
+            http_method=str(self.http.http_method),
             path=self.http.path,
             result=self.result.__name__
         )
@@ -166,6 +167,21 @@ class HTTP:
         return f"http_method: {self.http_method}, path: {self.path}"
 
 
+class HTTPMethod(Enum):
+    GET    = 'GET',
+    POST   = 'POST',
+    DELETE = 'DELETE',
+    PUT    = 'PUT'
+
+    def __str__(self) -> str:
+        return self.value[0] # ex) Tuple('GET') -> 'GET'
+
+GET    = HTTPMethod.GET
+POST   = HTTPMethod.POST
+DELETE = HTTPMethod.DELETE
+PUT    = HTTPMethod.PUT
+
+
 if __name__ == '__main__':
 
     with Service("http_service"):
@@ -174,12 +190,12 @@ if __name__ == '__main__':
         with Method("liveness"):
             Description("liveness probe")
             Result(str)
-            HTTP('GET', '/liveness')
+            HTTP(GET, '/liveness')
 
         with Method("readiness"):
             Description("readiness probe")
             Result(str)
-            HTTP('GET', '/readiness')
+            HTTP(GET, '/readiness')
 
         s = Service.get_contexts()[-1]
         s.generate()
