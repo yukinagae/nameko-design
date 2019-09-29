@@ -200,7 +200,3 @@ def main():
 
         # Generate python codes can be stored as a python file
         generate()
-
-
-if __name__ == '__main__':
-    main()

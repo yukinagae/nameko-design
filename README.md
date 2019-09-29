@@ -20,7 +20,7 @@ poetry install
 
 ```bash
 cd nameko-design
-poetry run python nameko-design/main.py
+poetry run nameko-design
 ```
 
 ## Design
