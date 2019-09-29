@@ -73,8 +73,8 @@ class HttpService:
 What I want:
 
 ```python
-with Service('http_service'):
-    Title('This is a http service')
+with Service('example_service'):
+    Title('This is an example service')
 
     with Method('liveness'):
         Description('liveness probe')
