@@ -80,15 +80,14 @@ with Service('http_service'):
         Description('liveness probe')
         Result(str)
         HTTP(GET, '/liveness')
-        GRPC() # Not yet imnplemented
 
     with Method('add'):
         Description('a + b')
-        with Payload(): # Not yet implemented
-            Field(1, "a", int, "left operand")
-            Field(2, "b", int, "right operand")
-            Required("a", "b")
-        Result(Int)
-        HTTP(GET, '/add/{a}/{b}') # Not yet implemented
-        GRPC() # Not yet imnplemented
+        with Payload():                         # Not yet implemented
+            Field(1, "a", int, "left operand")  # Not yet implemented
+            Field(2, "b", int, "right operand") # Not yet implemented
+            Required("a", "b")                  # Not yet implemented
+        Result(int)
+        HTTP(GET, '/add/{a}/{b}')               # Not yet implemented
+        GRPC()                                  # Not yet imnplemented
 ```
