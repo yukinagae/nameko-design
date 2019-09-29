@@ -1,5 +1,7 @@
 # nameko-design
 
+![logo](./logo.png)
+
 WIP: Generate [Nameko](https://www.nameko.io/) http files from design schema inspired by [goa](https://goa.design/)
 
 ## Dependencies
