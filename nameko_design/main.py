@@ -6,12 +6,18 @@ from jinja2 import Template
 class Context:
     contexts = threading.local()
 
-    def __enter__(self):
-        type(self).get_contexts().append(self)
-        return self
+    @classmethod
+    def get_contexts(cls):
+        if not hasattr(cls.contexts, 'stack'):
+            cls.contexts.stack = []
+        return cls.contexts.stack
 
-    def __exit__(self, typ, value, traceback):
-        type(self).get_contexts().pop()
+    @classmethod
+    def get_context(cls):
+        try:
+            return cls.get_contexts()[-1]
+        except IndexError:
+            raise TypeError("No context on context stack")
 
 
 class Service(Context):
@@ -27,6 +33,14 @@ class Service(Context):
     def __init__(self, name: str):
         self.name = name
         self.named_methods = {}
+
+    def __enter__(self):
+        type(self).get_contexts().append(self)
+        return self
+
+    def __exit__(self, typ, value, traceback):
+        self.generate()
+        type(self).get_contexts().pop()
 
     def title(self, val: str):
         self.title = val
@@ -50,19 +64,6 @@ class HttpService:
     def __str__(self) -> str:
         return f"name: {self.name}, title: {self.title}"
 
-    @classmethod
-    def get_contexts(cls):
-        if not hasattr(cls.contexts, 'stack'):
-            cls.contexts.stack = []
-        return cls.contexts.stack
-
-    @classmethod
-    def get_context(cls):
-        try:
-            return cls.get_contexts()[-1]
-        except IndexError:
-            raise TypeError("No context on context stack")
-
     def add_method(self, method):
         if method.name in self.named_methods:
             raise ValueError(
@@ -84,6 +85,13 @@ class Method(Context):
         self.service = Service.get_context()
         self.name = name
         self.service.add_method(self)
+
+    def __enter__(self):
+        type(self).get_contexts().append(self)
+        return self
+
+    def __exit__(self, typ, value, traceback):
+        type(self).get_contexts().pop()
 
     def description(self, val: str):
         self.description = val
@@ -112,19 +120,6 @@ class Method(Context):
 
     def __str__(self) -> str:
         return f"name: {self.name}, description: {self.description}, result: {self.result}, http: {self.http}"
-
-    @classmethod
-    def get_contexts(cls):
-        if not hasattr(cls.contexts, 'stack'):
-            cls.contexts.stack = []
-        return cls.contexts.stack
-
-    @classmethod
-    def get_context(cls):
-        try:
-            return cls.get_contexts()[-1]
-        except IndexError:
-            raise TypeError("No context on context stack")
 
 
 # Service Classes
@@ -178,12 +173,6 @@ DELETE = HTTPMethod.DELETE
 PUT = HTTPMethod.PUT
 
 
-def generate():
-    # Get a service from a context stack
-    s = Service.get_contexts()[-1]
-    s.generate()
-
-
 def main():
     with Service('http_service'):
         Title('This is a http service')
@@ -197,6 +186,3 @@ def main():
             Description('readiness probe')
             Result(str)
             HTTP(GET, '/readiness')
-
-        # Generate python codes can be stored as a python file
-        generate()
