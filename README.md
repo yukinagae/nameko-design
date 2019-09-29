@@ -50,10 +50,10 @@ class HttpService:
     name = "http service"
 
     @http('GET', '/liveness')
-    def liveness(self, request)
+    def liveness(self, request) -> str:
         pass
 
     @http('GET', '/readiness')
-    def readiness(self, request)
+    def readiness(self, request) -> str:
         pass
 ```
