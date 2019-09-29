@@ -1,3 +1,4 @@
+import argparse
 import threading
 from enum import Enum
 from jinja2 import Template
@@ -174,15 +175,9 @@ PUT = HTTPMethod.PUT
 
 
 def main():
-    with Service('http_service'):
-        Title('This is a http service')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('file', type=str)
 
-        with Method('liveness'):
-            Description('liveness probe')
-            Result(str)
-            HTTP(GET, '/liveness')
-
-        with Method('readiness'):
-            Description('readiness probe')
-            Result(str)
-            HTTP(GET, '/readiness')
+    args = parser.parse_args()
+    with open(args.file, "r") as f:
+        exec(f.read())
