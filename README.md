@@ -26,16 +26,16 @@ poetry run python cli/design.py
 This API design schema
 
 ```python
-with Service("http_service"):
-    Title("This is a http service")
+with Service('http_service'):
+    Title('This is a http service')
 
-    with Method("liveness"):
-        Description("liveness probe")
+    with Method('liveness'):
+        Description('liveness probe')
         Result(str)
         HTTP(GET, '/liveness')
 
-    with Method("readiness"):
-        Description("readiness probe")
+    with Method('readiness'):
+        Description('readiness probe')
         Result(str)
         HTTP(GET, '/readiness')
 ```
@@ -47,7 +47,7 @@ from nameko.web.handlers import http
 
 
 class HttpService:
-    name = "http service"
+    name = 'http service'
 
     @http('GET', '/liveness')
     def liveness(self, request) -> str:

@@ -4,9 +4,6 @@ from jinja2 import Template
 
 
 class Context:
-    """Functionality for objects that put themselves in a context using
-    the `with` statement.
-    """
     contexts = threading.local()
 
     def __enter__(self):
@@ -41,7 +38,7 @@ from nameko.web.handlers import http
 
 
 class HttpService:
-    name = "{{ name }}"
+    name = '{{ name }}
 """)
         print(template.render(
             name=self.name,
@@ -61,7 +58,6 @@ class HttpService:
 
     @classmethod
     def get_context(cls):
-        """Return the deepest context on the stack."""
         try:
             return cls.get_contexts()[-1]
         except IndexError:
@@ -125,7 +121,6 @@ class Method(Context):
 
     @classmethod
     def get_context(cls):
-        """Return the deepest context on the stack."""
         try:
             return cls.get_contexts()[-1]
         except IndexError:
@@ -184,16 +179,16 @@ PUT    = HTTPMethod.PUT
 
 if __name__ == '__main__':
 
-    with Service("http_service"):
-        Title("This is a http service")
+    with Service('http_service'):
+        Title('This is a http service')
 
-        with Method("liveness"):
-            Description("liveness probe")
+        with Method('liveness'):
+            Description('liveness probe')
             Result(str)
             HTTP(GET, '/liveness')
 
-        with Method("readiness"):
-            Description("readiness probe")
+        with Method('readiness'):
+            Description('readiness probe')
             Result(str)
             HTTP(GET, '/readiness')
 
