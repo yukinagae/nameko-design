@@ -1,6 +1,6 @@
 # nameko-design
 
-![logo](./logo.png)
+![logo](https://raw.githubusercontent.com/yukinagae/nameko-design/master/logo.png)
 
 Generate [Nameko](https://www.nameko.io/) http files from design schema inspired by [goa](https://goa.design/)
 
