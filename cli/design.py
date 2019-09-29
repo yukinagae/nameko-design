@@ -34,7 +34,7 @@ class Service(Context):
         self.title = val
         return self
 
-    def _generate(self):
+    def generate(self):
         template = Template("""
 from nameko.web.handlers import http
 
@@ -46,7 +46,7 @@ class HttpService:
             name=self.name,
         ))
 
-        for method in self.methods:
+        for _, method in self.named_methods.items():
             print(method.generate())
     
     def __str__(self) -> str:
@@ -54,8 +54,6 @@ class HttpService:
 
     @classmethod
     def get_contexts(cls):
-        # no race-condition here, cls.contexts is a thread-local object
-        # be sure not to override contexts in a subclass however!
         if not hasattr(cls.contexts, 'stack'):
             cls.contexts.stack = []
         return cls.contexts.stack
@@ -110,7 +108,7 @@ class Method(Context):
         """)
         return template.render(
             name=self.name,
-            http_method=self.http.method,
+            http_method=self.http.http_method,
             path=self.http.path
         )
 
@@ -119,8 +117,6 @@ class Method(Context):
 
     @classmethod
     def get_contexts(cls):
-        # no race-condition here, cls.contexts is a thread-local object
-        # be sure not to override contexts in a subclass however!
         if not hasattr(cls.contexts, 'stack'):
             cls.contexts.stack = []
         return cls.contexts.stack
@@ -157,7 +153,7 @@ class Result:
         self.method.result(result_type)
 
 
-class Http:
+class HTTP:
 
     def __init__(self, http_method: str, path: str):
         self.http_method = http_method
@@ -171,14 +167,18 @@ class Http:
 
 if __name__ == '__main__':
 
-    with Service("name"):
+    with Service("http_service"):
         Title("This is a http service")
+
         with Method("liveness"):
             Description("liveness probe")
             Result(str)
-            Http('GET', '/liveness')
-            m = Method.get_contexts()[-1]
-            print(m)
+            HTTP('GET', '/liveness')
+
+        with Method("readiness"):
+            Description("readiness probe")
+            Result(str)
+            HTTP('GET', '/readiness')
 
         s = Service.get_contexts()[-1]
-        print(s)
+        s.generate()

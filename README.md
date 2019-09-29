@@ -26,19 +26,18 @@ poetry run python cli/design.py
 This API design schema
 
 ```python
+with Service("http_service"):
+    Title("This is a http service")
 
-with service("http service"):
-    description("This is a http service")
+    with Method("liveness"):
+        Description("liveness probe")
+        Result(str)
+        HTTP('GET', '/liveness')
 
-    with method("liveness"):
-        description("liveness probe")
-        result(str)
-        http('GET', '/liveness')
-
-    with method("readiness"):
-        description("readiness probe")
-        result(str)
-        http('GET', '/readiness')
+    with Method("readiness"):
+        Description("readiness probe")
+        Result(str)
+        HTTP('GET', '/readiness')
 ```
 
 will generate the below nameko file
