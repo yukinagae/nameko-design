@@ -103,13 +103,14 @@ class Method(Context):
     def generate(self):
         template = Template("""
     @http('{{ http_method }}', '{{ path }}')
-    def {{ name }}(self, request)
+    def {{ name }}(self, request) -> {{ result }}:
         pass
         """)
         return template.render(
             name=self.name,
             http_method=self.http.http_method,
-            path=self.http.path
+            path=self.http.path,
+            result=self.result.__name__
         )
 
     def __str__(self) -> str:
