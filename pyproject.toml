@@ -1,9 +1,13 @@
 [tool.poetry]
 name = "nameko-design"
-version = "0.1.0"
+version = "0.1.dev2"
 description = "Generate http files from design schema inspired by goa"
 authors = ["yukinagae <yuki.nagae1130@gmail.com>"]
 license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/yukinagae/nameko-design"
+repository = "https://github.com/yukinagae/nameko-design"
+keywords = ["nameko", "microservices", "design", "framework"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
