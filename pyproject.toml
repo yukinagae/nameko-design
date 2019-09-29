@@ -2,7 +2,7 @@
 name = "nameko-design"
 version = "0.1.0"
 description = "Generate http files from design schema inspired by goa"
-authors = ["yukinagae <yuki-nagae@m3.com>"]
+authors = ["yukinagae <yuki.nagae1130@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
