@@ -62,6 +62,8 @@ class HttpService:
 
 ## TODO
 
+- [ ] travis CI
+- [ ] pytest examples
 - [ ] Configure http url and port
 - [ ] Add URL parameter and type
 - [ ] Add payload (name, type, description, position etc)
