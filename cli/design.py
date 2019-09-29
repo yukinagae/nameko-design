@@ -1,20 +1,38 @@
+import threading
 from jinja2 import Template
 
 
-class Service:
+class Context:
+    """Functionality for objects that put themselves in a context using
+    the `with` statement.
+    """
+    contexts = threading.local()
+
+    def __enter__(self):
+        type(self).get_contexts().append(self)
+        return self
+
+    def __exit__(self, typ, value, traceback):
+        type(self).get_contexts().pop()
+
+
+class Service(Context):
+
+    def __new__(cls, *args, **kwargs):
+        instance = super(Service, cls).__new__(cls)
+        if cls.get_contexts():
+            instance.parent = cls.get_contexts()[-1]
+        else:
+            instance.parent = None
+        return instance
 
     def __init__(self, name: str):
         self.name = name
-        self.methods = []
+        self.named_methods = {}
 
-    def description(self, val: str):
-        self.description = val
+    def title(self, val: str):
+        self.title = val
         return self
-
-    def method(self, name: str):
-        method = Method(name)
-        self.methods.append(method)
-        return method
 
     def _generate(self):
         template = Template("""
@@ -31,27 +49,46 @@ class HttpService:
         for method in self.methods:
             print(method.generate())
     
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args):
-        self._generate()
-        return self
-
     def __str__(self) -> str:
-        return f"name: {self.name}, description: {self.description}"
+        return f"name: {self.name}, title: {self.title}"
+
+    @classmethod
+    def get_contexts(cls):
+        # no race-condition here, cls.contexts is a thread-local object
+        # be sure not to override contexts in a subclass however!
+        if not hasattr(cls.contexts, 'stack'):
+            cls.contexts.stack = []
+        return cls.contexts.stack
+
+    @classmethod
+    def get_context(cls):
+        """Return the deepest context on the stack."""
+        try:
+            return cls.get_contexts()[-1]
+        except IndexError:
+            raise TypeError("No context on context stack")
+
+    def add_method(self, method):
+        if method.name in self.named_methods:
+            raise ValueError(
+                "Variable name {} already exists.".format(method.name))
+        self.named_methods[method.name] = method
 
 
-class Method:
+class Method(Context):
+
+    def __new__(cls, *args, **kwargs):
+        instance = super(Method, cls).__new__(cls)
+        if cls.get_contexts():
+            instance.parent = cls.get_contexts()[-1]
+        else:
+            instance.parent = None
+        return instance
 
     def __init__(self, name: str):
+        self.service = Service.get_context()
         self.name = name
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args):
-        return self
+        self.service.add_method(self)
 
     def description(self, val: str):
         self.description = val
@@ -61,8 +98,8 @@ class Method:
         self.result = result_type
         return self
 
-    def http(self, method, path):
-        self.http = Http(method, path)
+    def http(self, http):
+        self.http = http
         return self
 
     def generate(self):
@@ -80,36 +117,68 @@ class Method:
     def __str__(self) -> str:
         return f"name: {self.name}, description: {self.description}, result: {self.result}, http: {self.http}"
 
+    @classmethod
+    def get_contexts(cls):
+        # no race-condition here, cls.contexts is a thread-local object
+        # be sure not to override contexts in a subclass however!
+        if not hasattr(cls.contexts, 'stack'):
+            cls.contexts.stack = []
+        return cls.contexts.stack
+
+    @classmethod
+    def get_context(cls):
+        """Return the deepest context on the stack."""
+        try:
+            return cls.get_contexts()[-1]
+        except IndexError:
+            raise TypeError("No context on context stack")
+
+
+# Service Classes
+class Title:
+
+    def __init__(self, name):
+        self.service = Service.get_context()
+        self.service.title(name)
+
+
+# Method Classes
+class Description:
+
+    def __init__(self, name):
+        self.method = Method.get_context()
+        self.method.description(name)
+
+
+class Result:
+
+    def __init__(self, result_type):
+        self.method = Method.get_context()
+        self.method.result(result_type)
+
 
 class Http:
 
-    def __init__(self, method: str, path: str):
-        self.method = method
+    def __init__(self, http_method: str, path: str):
+        self.http_method = http_method
         self.path = path
+        self.method = Method.get_context()
+        self.method.http(self)
 
     def __str__(self) -> str:
-        return f"method: {self.method}, path: {self.path}"
-
-
-def service(name: str):
-    return Service(name)
-
-
-def method(name: str):
-    return Method(name)
+        return f"http_method: {self.http_method}, path: {self.path}"
 
 
 if __name__ == '__main__':
 
-    with service("http service") as s:
-        s.description("This is a http service")
+    with Service("name"):
+        Title("This is a http service")
+        with Method("liveness"):
+            Description("liveness probe")
+            Result(str)
+            Http('GET', '/liveness')
+            m = Method.get_contexts()[-1]
+            print(m)
 
-        with s.method("liveness") as m:
-            m.description("liveness probe")
-            m.result(str)
-            m.http('GET', '/liveness')
-
-        with s.method("readiness") as m:
-            m.description("readiness probe")
-            m.result(str)
-            m.http('GET', '/readiness')
+        s = Service.get_contexts()[-1]
+        print(s)
