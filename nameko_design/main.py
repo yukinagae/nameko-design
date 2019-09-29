@@ -46,7 +46,7 @@ class HttpService:
 
         for _, method in self.named_methods.items():
             print(method.generate())
-    
+
     def __str__(self) -> str:
         return f"name: {self.name}, title: {self.title}"
 
@@ -163,18 +163,19 @@ class HTTP:
 
 
 class HTTPMethod(Enum):
-    GET    = 'GET',
-    POST   = 'POST',
+    GET = 'GET',
+    POST = 'POST',
     DELETE = 'DELETE',
-    PUT    = 'PUT'
+    PUT = 'PUT'
 
     def __str__(self) -> str:
-        return self.value[0] # ex) Tuple('GET') -> 'GET'
+        return self.value[0]  # ex) Tuple('GET') -> 'GET'
 
-GET    = HTTPMethod.GET
-POST   = HTTPMethod.POST
+
+GET = HTTPMethod.GET
+POST = HTTPMethod.POST
 DELETE = HTTPMethod.DELETE
-PUT    = HTTPMethod.PUT
+PUT = HTTPMethod.PUT
 
 
 def generate():
@@ -199,6 +200,7 @@ def main():
 
         # Generate python codes can be stored as a python file
         generate()
+
 
 if __name__ == '__main__':
     main()
