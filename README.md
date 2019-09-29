@@ -89,5 +89,5 @@ with Service('example_service'):
             Required("a", "b")                  # Not yet implemented
         Result(int)
         HTTP(GET, '/add/{a}/{b}')               # Not yet implemented
-        GRPC()                                  # Not yet imnplemented
+        GRPC()                                  # Not yet implemented
 ```
