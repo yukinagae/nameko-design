@@ -177,8 +177,13 @@ DELETE = HTTPMethod.DELETE
 PUT    = HTTPMethod.PUT
 
 
-if __name__ == '__main__':
+def generate():
+    # Get a service from a context stack
+    s = Service.get_contexts()[-1]
+    s.generate()
 
+
+def main():
     with Service('http_service'):
         Title('This is a http service')
 
@@ -192,5 +197,8 @@ if __name__ == '__main__':
             Result(str)
             HTTP(GET, '/readiness')
 
-        s = Service.get_contexts()[-1]
-        s.generate()
+        # Generate python codes can be stored as a python file
+        generate()
+
+if __name__ == '__main__':
+    main()
